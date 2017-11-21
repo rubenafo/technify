@@ -21,6 +21,7 @@ def crossover (f1, f2):
 class Stock:
 
   def __init__ (self, data):
+    self.crossOvers = []
     self.data = pd.DataFrame(data)
     if not len(self.data):
         raise ValueError ("initialized with empty Dataset")
@@ -39,25 +40,28 @@ class Stock:
     self.data[columnName] = col
     return self
 
-  def addCrossover (self, gen1, gen2):
+  def addCrossover (self, gen1, gen2, crossName):
     low = (self.data.shift(1)[gen1] >  self.data.shift(1)[gen2]) & (self.data[gen1] < self.data[gen2])
     high = (self.data.shift(1)[gen1] < self.data.shift(1)[gen2]) & (self.data[gen1] > self.data[gen2])
-    self.data["down"] = low
-    self.data["up"] = high
+    self.data[crossName+"Down"] = low
+    self.data[crossName+"Up"] = high
+    self.crossOvers.append(crossName)
     return self
 
-  def show (self, col1, col2):
-        plt.plot(self.data.date, self.data.c)
-        plt.plot(self.data.date, self.data[col1])
-        plt.plot(self.data.date, self.data[col2])
-        plt.legend(["close", col1, col2])
-        l = self.data[self.data.down]
-        h = self.data[self.data.up]
-        plt.scatter(l.date.values, l[col1].values, s=165, alpha=0.6, edgecolors="b")
-        plt.scatter(h.date.values,h[col2].values, s=165, alpha=0.6, edgecolors="g")
-        plt.show()
-
-
+  def show (self, *args):
+        #plt.plot(self.data.date, self.data.c)
+        colNames = []
+        for colName in args:
+            if not colName in self.crossOvers:
+                plt.plot(self.data.date, self.data[colName])
+                colNames.append(colName)
+            else:
+                print(colName)
+                low = self.data[self.data[colName+"Up"]]
+                up = self.data[self.data[colName+"Down"]]
+                plt.scatter(low.date.values, low.ma20.values, s=165, alpha=0.6, edgecolors="b")
+                plt.scatter(up.date.values, up.ma20.values, s=165, alpha=0.6, edgecolors="g")
+        plt.legend(colNames)
 
     #p = Portfolio(s)
     #buyHold = p.getBuyAndHold()
