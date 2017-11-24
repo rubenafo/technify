@@ -26,6 +26,13 @@ class Stock:
     if not len(self.data):
         raise ValueError ("initialized with empty Dataset")
 
+  def divide (self, value):
+    self.data["o"] = self.data["o"]/value
+    self.data["h"] = self.data["h"]/value
+    self.data["l"] = self.data["l"]/value
+    self.data["c"] = self.data["c"]/value
+    return self
+
   def addEma (self, window):
     columnName = "ema" + str(window)
     col = avg.Averages.ema(self.data, window, columnName)
