@@ -20,11 +20,16 @@ def crossover (f1, f2):
 
 class Stock:
 
-  def __init__ (self, data):
-    self.crossOvers = []
+  def __init__ (self, data,o="o", h="h", l="l", c="c"):
+    self.crossOvers = {}
     self.data = pd.DataFrame(data)
+    self.data = self.data.rename({o:"o", h:"h", l:"l", c:"c"})
     if not len(self.data):
         raise ValueError ("initialized with empty Dataset")
+
+  def multiply (self, value):
+    self.divide(1/value)
+    return self
 
   def divide (self, value):
     self.data["o"] = self.data["o"]/value
@@ -52,7 +57,7 @@ class Stock:
     high = (self.data.shift(1)[gen1] < self.data.shift(1)[gen2]) & (self.data[gen1] > self.data[gen2])
     self.data[crossName+"Down"] = low
     self.data[crossName+"Up"] = high
-    self.crossOvers.append(crossName)
+    self.crossOvers[crossName] = gen2
     return self
 
   def show (self, *args):
@@ -62,10 +67,10 @@ class Stock:
                 plt.plot(self.data.date, self.data[colName])
                 colNames.append(colName)
             else:
-                print(colName)
+                cutColumn = self.crossOvers[colName]
                 low = self.data[self.data[colName+"Up"]]
                 up = self.data[self.data[colName+"Down"]]
-                plt.scatter(low.date.values, low.ma20.values, s=165, alpha=0.6, edgecolors="b")
-                plt.scatter(up.date.values, up.ma20.values, s=165, alpha=0.6, edgecolors="g")
+                plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, edgecolors="b")
+                plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, edgecolors="g")
         plt.legend(colNames)
 
