@@ -24,7 +24,7 @@ import yfm
 y = yfm.fetcher()
 sans = y.getTicker("san.mc")
     
-s = Stock(data).addMa(50).addMa(200)
+s = Stock(sans).addMa(50).addMa(200)
 s.addCrossover("ma50", "ma200", "50over200")
 s.show("ma50", "ma200", "50over200")
 ```
