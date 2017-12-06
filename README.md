@@ -4,22 +4,34 @@ _Technify_ provides a simple yet powerful framework to generate common technical
 
 ## Methods 
 
-* moving averages: ma()
-* exponential moving average: ema()
-* crossover detection
+#### Data 
+* Integation with [yfm](https://github.com/rubenafo/yfMongo) 
+* Quandl data [Quanld](https://www.quandl.com/): .fromQuandl()
+
+#### Methods
+* Moving Averages: ma()
+* Exponential Moving Average: ema()
+* Crossover detection: addCrossOver()
 
 ## Usage
+
+### Integration with yfm library
 
 ```python
 from stock import Stock
 import yfm
-import quandl
 
-if __name__ == "__main__":
-    y = yfm.fetcher()
-    sans = y.getTicker("san.mc")
+y = yfm.fetcher()
+sans = y.getTicker("san.mc")
     
-    s = Stock(data).addMa(50).addMa(200)
-    s.addCrossover("ma50", "ma200", "50over200")
-    s.show("ma50", "ma200", "50over200")
-    ```
+s = Stock(data).addMa(50).addMa(200)
+s.addCrossover("ma50", "ma200", "50over200")
+s.show("ma50", "ma200", "50over200")
+```
+### Quandl 
+```
+from stock import Stock
+
+usdbit = Stock.fromQuandl("BCHARTS/KRAKENEUR")
+usdbit.show("c")
+```
