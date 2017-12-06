@@ -16,7 +16,6 @@ _Technify_ provides a simple yet powerful framework to generate common technical
 ## Usage
 
 ### Integration with yfm library
-
 ```python
 from stock import Stock
 import yfm
@@ -29,7 +28,7 @@ s.addCrossover("ma50", "ma200", "50over200")
 s.show("ma50", "ma200", "50over200")
 ```
 ### Quandl 
-```
+```python
 from stock import Stock
 
 usdbit = Stock.fromQuandl("BCHARTS/KRAKENEUR")
