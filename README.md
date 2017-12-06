@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/technify.svg)](https://badge.fury.io/py/technify)
 # technify
 Technical analysis framework using  pandas and python.
 _Technify_ provides a simple yet powerful framework to generate common technical analysis signals and custom combinations of them.
