@@ -10,6 +10,6 @@ setup(
   download_url = 'https://github.com/rubenafo/technify/archive/0.5.zip',
   keywords = ['technical-analysis', 'pandas', 'finance','stock'],
   classifiers = [],
-  install_requires = ["quandl"]
+  install_requires = ["yfm", "quandl"]
 )
 
