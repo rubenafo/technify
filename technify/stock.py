@@ -1,10 +1,7 @@
 
-import sys
-sys.path.append("./libs")
-
-from libs import averages as avg
+from technify.libs import averages as avg
 import yfm as yf
-from portfolio import Portfolio
+from technify import portfolio as Portfolio
 
 import pandas as pd
 import matplotlib.pyplot as plt

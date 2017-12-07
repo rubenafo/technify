@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from vectors import Vectors
-from windowOp import WindowOp
+from technify.libs.vectors import Vectors
+from technify.libs.windowOp import WindowOp
 
 import numpy as np
 
