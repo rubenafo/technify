@@ -2,13 +2,9 @@
 from technify.libs import averages as avg
 import yfm as yf
 from technify import portfolio as Portfolio
-
+import matplotlib.dates as mdates
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib
-import matplotlib.dates as md
-import datetime as dt
-import matplotlib.dates as mdates
 import quandl
 
 plt.style.use('ggplot')
@@ -24,6 +20,7 @@ class Stock:
     self.data = self.data.rename(columns={o:"o", h:"h", l:"l", c:"c", date:"date"})
     if indexIsDate:
         self.data["date"] = data.index
+    self.data.date = [d.date() for d in self.data.date]
     if not len(self.data):
         raise ValueError ("initialized with empty Dataset")
 
@@ -70,16 +67,29 @@ class Stock:
     return self
 
   def show (self, *args):
+        self.fig, self.ax = plt.subplots()
+        self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+        self.fig.autofmt_xdate()
         colNames = []
+        minRange = 0
+        maxRange = len(self.data)
         for colName in args:
-            if not colName in self.crossOvers:
-                plt.plot(self.data.date, self.data[colName])
+            if (type(colName) == range):
+                minRange = colName.start
+                if colName.stop < 0:
+                    minRange = len(self.data) + colName.stop
+                    maxRange = len(self.data)
+                else:
+                    maxRange = colName.stop
+            elif not colName in self.crossOvers:
+                self.ax.plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange])
                 colNames.append(colName)
             else:
                 cutColumn = self.crossOvers[colName]
-                low = self.data[self.data[colName+"Up"]]
-                up = self.data[self.data[colName+"Down"]]
+                low = self.data[minRange:maxRange][self.data[colName+"Up"]]
+                up = self.data[minRange:maxRange][self.data[colName+"Down"]]
                 plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
                 plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
         plt.legend(colNames)
+        return self
 
