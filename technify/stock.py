@@ -1,8 +1,6 @@
-
-#from technify.libs import averages as avg
-from libs import averages as avg
+from technify.libs import averages as avg
 import yfm as yf
-#from technify import portfolio as Portfolio
+from technify import portfolio as Portfolio
 import matplotlib.dates as mdates
 import pandas as pd
 import matplotlib.pyplot as plt
