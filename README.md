@@ -16,6 +16,8 @@ _Technify_ provides a simple yet powerful framework to generate common technical
 
 ## Usage
 
+The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quandl.com/data/BCHARTS/KRAKENUSD-Bitcoin-Markets-krakenUSD), generates two EMA moving average (n=50 and n=200) and shows the latest 60 values:
+
 ### Loading from Quandl
 ```python
 
