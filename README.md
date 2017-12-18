@@ -28,4 +28,4 @@ bitusd = Stock()\
     .show(range(-60), "Close","ema50", "ema200")
 ```
 
-<img src="https://github.com/rubenafo/technify/blob/master/imgs/sample1.png" width="200">
+<img src="https://github.com/rubenafo/technify/blob/master/imgs/sample1.png" width="806">
