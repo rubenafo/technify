@@ -28,4 +28,4 @@ bitusd = Stock()\
     .show(range(-60), "Close","ema50", "ema200")
 ```
 
-[BitcoinUSD](https://github.com/rubenafo/technify/blob/master/imgs/sample1.png)
+[!Technify displaying Bitcoin-USD mean averages][https://github.com/rubenafo/technify/blob/master/imgs/sample1.png](https://github.com/rubenafo/technify/blob/master/imgs/sample1.png)
