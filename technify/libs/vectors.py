@@ -31,10 +31,6 @@ class Vectors:
     return result
 
   @staticmethod
-  def avgVector (df):
-    return df["c"].mean()
-
-  @staticmethod
   def absVector (serie):
     result = []
     for value in serie:

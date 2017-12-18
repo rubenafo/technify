@@ -1,7 +1,8 @@
 
-from technify.libs import averages as avg
+#from technify.libs import averages as avg
+from libs import averages as avg
 import yfm as yf
-from technify import portfolio as Portfolio
+#from technify import portfolio as Portfolio
 import matplotlib.dates as mdates
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,53 +10,50 @@ import quandl
 
 plt.style.use('ggplot')
 
-def crossover (f1, f2):
-    None
-
 class Stock:
 
-  def __init__ (self, data,o="o", h="h", l="l", c="c", date="date", indexIsDate=False):
+  def __init__ (self, data=None, date="date", indexIsDate=False):
     self.crossOvers = {}
-    self.data = pd.DataFrame(data)
-    self.data = self.data.rename(columns={o:"o", h:"h", l:"l", c:"c", date:"date"})
-    if indexIsDate:
-        self.data["date"] = data.index
-    self.data.date = [d.date() for d in self.data.date]
-    if not len(self.data):
-        raise ValueError ("initialized with empty Dataset")
-
-  def multiply (self, value):
-    self.divide(1/value)
-    return self
-
-  def divide (self, value):
-    self.data["o"] = self.data["o"]/value
-    self.data["h"] = self.data["h"]/value
-    self.data["l"] = self.data["l"]/value
-    self.data["c"] = self.data["c"]/value
-    return self
+    if data is not None:
+        self.data = pd.DataFrame(data)
+        if indexIsDate:
+            self.data["date"] = data.index
+            self.data.date = [d.date() for d in self.data.date]
+    else:
+        self.data = pd.DataFrame()
 
   @staticmethod
-  def fromQuandl (ticker):
+  def fromQuandl (ticker, colName=None):
     instrumentData = quandl.get(ticker)
-    return Stock(instrumentData, o="Open", c="Close",h="High", l="Low", indexIsDate=True)
+    if colName is None:
+        raise TypeError ("fromQuandl() missing colName, valid colNames:{}".format(list(instrumentData.columns)))
+    if colName is not None:
+        instrumentData = instrumentData[colName]
+    return Stock(instrumentData, indexIsDate=True)
 
-  def addEma (self, window):
-    columnName = "ema" + str(window)
-    col = avg.Averages.ema(self.data, window, columnName)
+  def addEma (self, window, srcCol, newCol=None):
+    if srcCol is None:
+        raise TypeError ("fromQuandl() missing colName, valid colNames:{}".format(list(self.data.columns)))
+
+    columnName = "ema" + str(window) if not newCol else newCol
+    col = avg.Averages.ema(self.data, window, srcCol)
     self.data[columnName]= col;
     return self
 
-  def addMa (self, window):
+  def addMa (self, window, srcCol, newCol=None):
     if len(self.data) < window:
         raise ValueError ("MA window = " + str(window) + ", max = " + str(len(self.data)))
-    columnName = "ma" + str(window)
-    col = avg.Averages.ma(self.data, window, columnName)
+    columnName = "ma" + str(window) if not newCol else newCol
+    col = avg.Averages.ma(self.data, window, srcCol)
     self.data[columnName] = col
     return self
 
-  def append (self, data, colName):
-    self.data[colName]= data
+  def addCol (self, data, srcColName=None, dstColName=None):
+    if srcColName == None:
+        raise ValueError("Invalid source col name. Options={}".format(data.columns()))
+    if dstColName == None:
+        dstColName = srcColName
+    self.data[dstColName]= data[srcColName]
     return self
 
   def addCrossover (self, gen1, gen2, crossName):

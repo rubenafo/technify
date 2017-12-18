@@ -1,4 +1,4 @@
-# Copyright 2017 Ruben Afonso, http://www.figurebelow.com
+# Copyright 2017 Ruben Afonso, http://www.rubenaf.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,36 +14,28 @@
 
 from technify.libs.vectors import Vectors
 from technify.libs.windowOp import WindowOp
-
 import numpy as np
 
 class Averages:
 
-  # This auxiliary function is used in MA
   @staticmethod
-  def sumWindow (series):
-    return Vectors.avgVector (series)
+  def ma (df, period, colName):
+    return df[colName].rolling(period).mean()
 
   @staticmethod
-  def ma (df, period, columName="ma"):
-    ma = (df.c.rolling(period).mean())
-    return ma
-
-  @staticmethod
-  def ema (df, period, newField="ema"):
+  def ema (df, period, colName):
     result = []
     for i in range(period-1):
       result.append(np.nan)
     k = (2.0/(period+1))
     initSlice = df[0:period]
-    previousDay = Vectors.avgVector(initSlice)
+    previousDay = initSlice[colName].mean()
     result.append(previousDay)
     emaSlice = df[period:]
     for index, i in emaSlice.iterrows():
-        previousDay = i["c"] * float(k) + previousDay * float((1-k))
+        previousDay = i[colName] * float(k) + previousDay * float((1-k))
         result.append(previousDay)
     return result
-
 
   @staticmethod
   def weightSum (series, weights):

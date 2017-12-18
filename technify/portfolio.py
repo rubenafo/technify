@@ -16,7 +16,7 @@ class Portfolio:
     # The stock dataframe contains ohlc values plus down and up columns
     # indicating when to buy and when to sell
     def __init__(self, stock):
-        self.dframe = stock.ts #[stock.ts.up | stock.ts.down].reset_index()
+        self.data = stock.data
         self.history = []
 
     def getRelativeReturn (self, strategy1, strategy2):
@@ -29,11 +29,11 @@ class Portfolio:
             self.history.append({"date":date,"op":"sell", "price":price, "qty":qty, "inventory":inventory, "cash":cash})
 
     def getBuyAndHold (self, budget=10000):
-        initQty = math.floor(budget / self.dframe.iloc[0].o)
-        initValue = initQty * float(self.dframe.head(1).o)
-        endValue = initQty * float(self.dframe.tail(1).c)
+        initQty = math.floor(budget / self.data.iloc[0].o)
+        initValue = initQty * float(self.data.head(1).o)
+        endValue = initQty * float(self.data.tail(1).c)
         returnPerc = (endValue - initValue) * 100 / initValue
-        return endValue
+        return endValue, str(returnPerc) + "%"
 
     def getBuySellStrategy (self, budget=10000, buyOnStart=False, sellOnEnd=False):
         self.history.clear()
