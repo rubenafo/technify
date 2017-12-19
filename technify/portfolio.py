@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 10 08:25:44 2017
-
-@author: ruben
-"""
 
 # TODO: return, alpha, beta, sharpe, sortino, drawdown, volatility
 
