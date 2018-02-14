@@ -1,7 +1,9 @@
-from technify.libs import averages as avg
+
 import yfm as yf
 import matplotlib.dates as mdates
 import pandas as pd
+import numpy as np
+import talib as ta
 import matplotlib.pyplot as plt
 import quandl
 
@@ -11,6 +13,7 @@ class Stock:
 
   def __init__ (self, data=None, date="date", indexIsDate=False):
     self.crossOvers = {}
+    self.calculatedColumns = {}
     if data is not None:
         self.data = pd.DataFrame(data)
         if indexIsDate:
@@ -20,35 +23,34 @@ class Stock:
         self.data = pd.DataFrame()
 
   @staticmethod
-  def fromQuandl (ticker, colName=None):
+  def fromQuandl (ticker):
     instrumentData = quandl.get(ticker)
-    if colName is None:
-        raise TypeError ("fromQuandl() missing colName, valid colNames:{}".format(list(instrumentData.columns)))
-    if colName is not None:
-        instrumentData = instrumentData[colName]
+    print ("{} - available cols:{}".format(ticker, list(instrumentData.columns)))
     return Stock(instrumentData, indexIsDate=True)
 
-  def addEma (self, window, srcCol, newCol=None):
-    if srcCol is None:
-        raise TypeError ("fromQuandl() missing colName, valid colNames:{}".format(list(self.data.columns)))
-
-    columnName = "ema" + str(window) if not newCol else newCol
-    col = avg.Averages.ema(self.data, window, srcCol)
-    self.data[columnName]= col;
-    return self
-
-  def addMa (self, window, srcCol, newCol=None):
-    if len(self.data) < window:
-        raise ValueError ("MA window = " + str(window) + ", max = " + str(len(self.data)))
-    columnName = "ma" + str(window) if not newCol else newCol
-    col = avg.Averages.ma(self.data, window, srcCol)
-    self.data[columnName] = col
+  def addFunc (self, func, cols, output=None, **kwargs):
+    outputValues = []
+    if len(cols) == 1:
+        resultName = output or func.__name__
+        outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
+    elif len(cols) == 2:
+        resultName = output or func.__name__
+        outputValues = func(np.asarray(self.data[cols[0]]),np.asarray(self.data[cols[1]]), **kwargs)
+    elif len(cols) == 3:
+        resultName = func.__name__
+        col0 = np.asarray(self.data["High"])
+        col1 = np.asarray(self.data["Low"])
+        col2 = np.asarray(self.data["Close"])
+        outputValues = func(col0, col1, col2)
+    for outputCol in outputValues:
+        self.calculatedColumns[outputCol] = outputValues[outputCol]
+    print("Calculated cols: {}".format(list(self.calculatedColumns.keys())))
     return self
 
   def addCol (self, data, srcColName=None, dstColName=None):
-    if srcColName == None:
+    if srcColName is None:
         raise ValueError("Invalid source col name. Options={}".format(data.columns()))
-    if dstColName == None:
+    if dstColName is None:
         dstColName = srcColName
     self.data[dstColName]= data[srcColName]
     return self
@@ -62,29 +64,33 @@ class Stock:
     return self
 
   def show (self, *args):
-        self.fig, self.ax = plt.subplots()
-        self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-        self.fig.autofmt_xdate()
-        colNames = []
-        minRange = 0
-        maxRange = len(self.data)
-        for colName in args:
-            if (type(colName) == range):
-                minRange = colName.start
-                if colName.stop < 0:
-                    minRange = len(self.data) + colName.stop
-                    maxRange = len(self.data)
-                else:
-                    maxRange = colName.stop
-            elif not colName in self.crossOvers:
-                self.ax.plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange])
-                colNames.append(colName)
+    fig, ax = plt.subplots(2,1,sharex=True)
+    fig.subplots_adjust(hspace=0)
+    #self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+    fig.autofmt_xdate()
+    colNames = []
+    minRange = 0
+    maxRange = len(self.data)
+    for colName in args:
+        if (type(colName) == range):
+            minRange = colName.start
+            if colName.stop < 0:
+                minRange = len(self.data) + colName.stop
+                maxRange = len(self.data)
             else:
-                cutColumn = self.crossOvers[colName]
-                low = self.data[minRange:maxRange][self.data[colName+"Up"]]
-                up = self.data[minRange:maxRange][self.data[colName+"Down"]]
-                plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
-                plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
-        plt.legend(colNames)
-        return self
+                maxRange = colName.stop
+        elif not colName in self.crossOvers:
+            ax[0].plot(self.data.date[minRange:maxRange], self.calculatedColumns[colName][minRange:maxRange])
+            colNames.append(colName)
+        else:
+            cutColumn = self.crossOvers[colName]
+            low = self.data[minRange:maxRange][self.data[colName+"Up"]]
+            up = self.data[minRange:maxRange][self.data[colName+"Down"]]
+            plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
+            plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
+    ax[0].legend(colNames)
+    ax[1].bar(self.data.date[minRange:maxRange], self.data["Volume (BTC)"][minRange:maxRange])
+    ax[1].legend(["Volume (BTC)"])
+    plt.show()
+    return self
 
