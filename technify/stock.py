@@ -1,9 +1,7 @@
 
-import yfm as yf
-import matplotlib.dates as mdates
 import pandas as pd
 import numpy as np
-import talib as ta
+import os
 import matplotlib.pyplot as plt
 import quandl
 
@@ -12,6 +10,8 @@ plt.style.use('ggplot')
 class Stock:
 
   def __init__ (self, data=None, date="date", indexIsDate=False):
+    if "QUANDL_TOKEN" in os.environ:
+        quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
     self.crossOvers = {}
     self.calculatedColumns = {}
     if data is not None:
@@ -28,13 +28,11 @@ class Stock:
     print ("{} - available cols:{}".format(ticker, list(instrumentData.columns)))
     return Stock(instrumentData, indexIsDate=True)
 
-  def addFunc (self, func, cols, output=None, **kwargs):
+  def addFunc (self, func, *cols, output=None, **kwargs):
     outputValues = []
     if len(cols) == 1:
-        resultName = output or func.__name__
         outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
     elif len(cols) == 2:
-        resultName = output or func.__name__
         outputValues = func(np.asarray(self.data[cols[0]]),np.asarray(self.data[cols[1]]), **kwargs)
     elif len(cols) == 3:
         resultName = func.__name__
@@ -44,7 +42,6 @@ class Stock:
         outputValues = func(col0, col1, col2)
     for outputCol in outputValues:
         self.calculatedColumns[outputCol] = outputValues[outputCol]
-    print("Calculated cols: {}".format(list(self.calculatedColumns.keys())))
     return self
 
   def addCol (self, data, srcColName=None, dstColName=None):
