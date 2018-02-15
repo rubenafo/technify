@@ -14,6 +14,7 @@ class Stock:
         quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
     self.crossOvers = {}
     self.calculatedColumns = {}
+    self.showVolume = False
     if data is not None:
         self.data = pd.DataFrame(data)
         if indexIsDate:
@@ -28,18 +29,17 @@ class Stock:
     print ("{} - available cols:{}".format(ticker, list(instrumentData.columns)))
     return Stock(instrumentData, indexIsDate=True)
 
-  def addFunc (self, func, *cols, output=None, **kwargs):
+  def addFunc (self, func, *cols, **kwargs):
     outputValues = []
     if len(cols) == 1:
         outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
     elif len(cols) == 2:
         outputValues = func(np.asarray(self.data[cols[0]]),np.asarray(self.data[cols[1]]), **kwargs)
     elif len(cols) == 3:
-        resultName = func.__name__
-        col0 = np.asarray(self.data["High"])
-        col1 = np.asarray(self.data["Low"])
-        col2 = np.asarray(self.data["Close"])
-        outputValues = func(col0, col1, col2)
+        col0 = np.asarray(self.data[cols[0]])
+        col1 = np.asarray(self.data[cols[1]])
+        col2 = np.asarray(self.data[cols[2]])
+        outputValues = func(col0, col1, col2, **kwargs)
     for outputCol in outputValues:
         self.calculatedColumns[outputCol] = outputValues[outputCol]
     return self
@@ -60,15 +60,19 @@ class Stock:
     self.crossOvers[crossName] = gen2
     return self
 
-  def show (self, *args):
-    fig, ax = plt.subplots(2,1,sharex=True)
+  def show (self, *displayedCols, volume=None):
+    if volume is not None:
+        fig, ax = plt.subplots(2,1,sharex=True)
+    else:
+        fig, ax = plt.subplots(1,1,sharex=True)
+        ax = [ax]
     fig.subplots_adjust(hspace=0)
     #self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     fig.autofmt_xdate()
     colNames = []
     minRange = 0
     maxRange = len(self.data)
-    for colName in args:
+    for colName in displayedCols:
         if (type(colName) == range):
             minRange = colName.start
             if colName.stop < 0:
@@ -86,8 +90,9 @@ class Stock:
             plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
             plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
     ax[0].legend(colNames)
-    ax[1].bar(self.data.date[minRange:maxRange], self.data["Volume (BTC)"][minRange:maxRange])
-    ax[1].legend(["Volume (BTC)"])
+    if volume is not None:
+        ax[1].bar(self.data.date[minRange:maxRange], self.data[volume][minRange:maxRange])
+        ax[1].legend([volume])
     plt.show()
     return self
 

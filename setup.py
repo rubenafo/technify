@@ -9,7 +9,7 @@ setup(
   author_email = 'rbfrancos@gmail.com',
   url = 'https://github.com/rubenafo/technify', 
   download_url = 'https://github.com/rubenafo/technify/archive/0.6.5.zip',
-  keywords = ['technical-analysis', 'pandas', 'finance','stock'],
+  keywords = ['technical-analysis', 'pandas', 'finance','stock', 'ta-lib'],
   classifiers = [],
   install_requires = ["yfm", "quandl","ta-lib"]
 )
