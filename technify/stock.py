@@ -13,7 +13,6 @@ class Stock:
     if "QUANDL_TOKEN" in os.environ:
         quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
     self.crossOvers = {}
-    self.calculatedColumns = {}
     self.showVolume = False
     if data is not None:
         self.data = pd.DataFrame(data)
@@ -25,11 +24,13 @@ class Stock:
 
   @staticmethod
   def fromQuandl (ticker):
+    if "QUANDL_TOKEN" in os.environ:
+        quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
     instrumentData = quandl.get(ticker)
     print ("{} - available cols:{}".format(ticker, list(instrumentData.columns)))
     return Stock(instrumentData, indexIsDate=True)
 
-  def addFunc (self, func, *cols, **kwargs):
+  def append (self, func, *cols, **kwargs):
     outputValues = []
     if len(cols) == 1:
         outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
@@ -41,7 +42,7 @@ class Stock:
         col2 = np.asarray(self.data[cols[2]])
         outputValues = func(col0, col1, col2, **kwargs)
     for outputCol in outputValues:
-        self.calculatedColumns[outputCol] = outputValues[outputCol]
+        self.data[outputCol] = outputValues[outputCol]
     return self
 
   def addCol (self, data, srcColName=None, dstColName=None):
@@ -81,7 +82,7 @@ class Stock:
             else:
                 maxRange = colName.stop
         elif not colName in self.crossOvers:
-            ax[0].plot(self.data.date[minRange:maxRange], self.calculatedColumns[colName][minRange:maxRange])
+            ax[0].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange])
             colNames.append(colName)
         else:
             cutColumn = self.crossOvers[colName]
