@@ -61,7 +61,7 @@ class Stock:
     self.crossOvers[crossName] = gen2
     return self
 
-  def show (self, *displayedCols, volume=None):
+  def show (self, *displayedCols, interval=None, volume=None, colors=None):
     if volume is not None:
         fig, ax = plt.subplots(2,1,sharex=True)
     else:
@@ -73,16 +73,18 @@ class Stock:
     colNames = []
     minRange = 0
     maxRange = len(self.data)
-    for colName in displayedCols:
-        if (type(colName) == range):
-            minRange = colName.start
-            if colName.stop < 0:
-                minRange = len(self.data) + colName.stop
-                maxRange = len(self.data)
-            else:
-                maxRange = colName.stop
-        elif not colName in self.crossOvers:
-            ax[0].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange])
+    if interval is not None:
+        minRange = interval.start
+        if interval.stop < 0:
+            minRange = len(self.data) + interval.stop
+            maxRange = len(self.data)
+        else:
+            maxRange = interval.stop
+    for i in range(len(displayedCols)):
+        colName = displayedCols[i]
+        if not colName in self.crossOvers:
+            color = colors[i] if len(colors) > i else None
+            ax[0].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange], color=color)
             colNames.append(colName)
         else:
             cutColumn = self.crossOvers[colName]
