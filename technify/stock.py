@@ -30,7 +30,7 @@ class Stock:
     print ("{} - available cols:{}".format(ticker, list(instrumentData.columns)))
     return Stock(instrumentData, indexIsDate=True)
 
-  def append (self, func, *cols, **kwargs):
+  def append (self, func, *cols, saveas=[], **kwargs):
     outputValues = []
     if len(cols) == 1:
         outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
@@ -41,8 +41,13 @@ class Stock:
         col1 = np.asarray(self.data[cols[1]])
         col2 = np.asarray(self.data[cols[2]])
         outputValues = func(col0, col1, col2, **kwargs)
-    for outputCol in outputValues:
-        self.data[outputCol] = outputValues[outputCol]
+    colNamesLog = []
+    for i in range(len(list(outputValues.keys()))):
+        outputCol = list(outputValues.keys())[i]
+        newColName = saveas[i] if len(saveas) > i else outputCol
+        self.data[newColName] = outputValues[outputCol]
+        colNamesLog.append(newColName)
+    print (">> storing {} results as [{}]".format(func.__name__, ", ".join(colNamesLog)))
     return self
 
   def addCol (self, data, srcColName=None, dstColName=None):
@@ -61,7 +66,7 @@ class Stock:
     self.crossOvers[crossName] = gen2
     return self
 
-  def show (self, *displayedCols, interval=None, volume=None, colors=None):
+  def show (self, *displayedCols, interval=None, volume=None, colors=[]):
     if volume is not None:
         fig, ax = plt.subplots(2,1,sharex=True)
     else:
@@ -83,6 +88,9 @@ class Stock:
     for i in range(len(displayedCols)):
         colName = displayedCols[i]
         if not colName in self.crossOvers:
+            if colName not in self.data.columns:
+                print (">> '{}' column not found in data, skipping...".format(colName))
+                break
             color = colors[i] if len(colors) > i else None
             ax[0].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange], color=color)
             colNames.append(colName)
