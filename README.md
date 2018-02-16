@@ -21,7 +21,7 @@ from technify import Overlap as ov
 
 bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
   .append(ov.bbands, "Close", timeperiod=40, saveas=["bblow", "bbmedium", "bbhigh"]) \
-  .append(ov.ema, "Open", timeperiod=40, saveas=["ema40"])\
+  .append(ov.ema, "Open", timeperiod=40)\
   .show("bblow", "bbmedium", "bbhigh", interval=range(-60))
 ```
 
