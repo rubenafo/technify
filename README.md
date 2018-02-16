@@ -1,33 +1,28 @@
 [![PyPI version](https://badge.fury.io/py/technify.svg)](https://badge.fury.io/py/technify)
-# technify
-Technical analysis framework using pandas and ta-lib.
-_Technify_ provides a simple yet powerful framework to generate common technical analysis signals and custom combinations of them.
+## technify
+Technical analysis framework using quandl, ta-lib and pandas library.   
 
-## Methods
+_Technify_ provides a simple yet powerful framework to generate common technical analysis signals using [ta-lib](https://github.com/mrjbq7/ta-lib) and pandas visualization to explore trends in stocks data.   
+The data can be provided as _ohlcv_ data or directly from [Quandl](https://www.quandl.com/) by means of the built-in integration.
 
-#### Data
-* Integation with [yfm](https://github.com/rubenafo/yfMongo)
-* Quandl data [Quanld](https://www.quandl.com/): .fromQuandl()
+# Features
+* Integration with [Quandl](https://www.quandl.com/) data
+* TA-LIB algorithms API
+* Pandas visualization
 
-#### Methods
-* Moving Averages: ma()
-* Exponential Moving Average: ema()
-* Crossover detection: addCrossOver()
+# Examples
 
-## Usage
-
-The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quandl.com/data/BCHARTS/KRAKENUSD-Bitcoin-Markets-krakenUSD), generates two EMA moving average (n=50 and n=200) and shows the latest 60 values:
+The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quandl.com/data/BCHARTS/KRAKENUSD-Bitcoin-Markets-krakenUSD), calculates the Bollinger Bands and EMA(40) and displays the latest 60 data points.
 
 ### Loading from Quandl
 ```python
-
 from technify import Stock
+from technify import Overlap as ov
 
-bitusd = Stock()\
-    .fromQuandl("BCHARTS/KRAKENUSD", "Close")\
-    .addEma(50, "Close")\
-    .addEma(200, "Close")\
-    .show(range(-60), "Close","ema50", "ema200")
+bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
+  .append(ov.bbands, "Close", timeperiod=40, saveas=["low", "medium", "high"]) \
+  .append(ov.ema, "Open", timeperiod=40, saveas=["ema40"])\
+  .show("low", "medium", "high", "Close", interval=range(-60))
 ```
 
-<img src="https://github.com/rubenafo/technify/blob/master/imgs/sample1.png" width="806">
+<img src="https://github.com/rubenafo/technify/blob/master/imgs/technify1.png" width="806">
