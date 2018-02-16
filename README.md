@@ -25,4 +25,4 @@ bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
   .show("low", "medium", "high", "Close", interval=range(-60))
 ```
 
-<img src="https://github.com/rubenafo/technify/blob/master/imgs/technify1.png" width="806">
+<img src="https://github.com/rubenafo/technify/blob/master/imgs/technify_1.png" width="806">
