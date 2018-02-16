@@ -10,6 +10,9 @@ The data can be provided as _ohlcv_ data or directly from [Quandl](https://www.q
 * TA-LIB algorithms API
 * Pandas visualization
 
+# Documentation
+Check the most up-to-date documentation in the [wiki](https://github.com/rubenafo/technify/wiki)
+
 # Examples
 
 The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quandl.com/data/BCHARTS/KRAKENUSD-Bitcoin-Markets-krakenUSD), calculates the Bollinger Bands and EMA(40) and displays the latest 60 data points.
