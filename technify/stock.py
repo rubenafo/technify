@@ -5,6 +5,9 @@ import os
 import matplotlib.pyplot as plt
 import quandl
 
+import overlap
+import momentum
+
 plt.style.use('ggplot')
 
 class Stock:
@@ -66,12 +69,24 @@ class Stock:
     self.crossOvers[crossName] = gen2
     return self
 
-  def show (self, *displayedCols, interval=None, volume=None, colors=[]):
+  # Infer how many subplots we need
+  def inferPlots(self, colNames, volume):
+    plots = {}
+    for i in range(len(colNames)):
+        colName = colNames[i]
+        if i not in plots:
+            plots[i] = [colName] if type(colName) is not list else colName
+        else:
+            plots[i].append(colName)
     if volume is not None:
-        fig, ax = plt.subplots(2,1,sharex=True)
-    else:
-        fig, ax = plt.subplots(1,1,sharex=True)
-        ax = [ax]
+        plots[len(plots)] = [volume]
+    fig, pls = plt.subplots(len(plots), 1, sharex=True)
+    if len(plots) == 1:
+        pls = [pls]
+    return plots, fig, pls
+
+  def show (self, *displayedCols, interval=None, volume=None, colors=[]):
+    plotGroups, fig, plots = self.inferPlots(displayedCols, volume)
     fig.subplots_adjust(hspace=0)
     #self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     fig.autofmt_xdate()
@@ -85,25 +100,25 @@ class Stock:
             maxRange = len(self.data)
         else:
             maxRange = interval.stop
-    for i in range(len(displayedCols)):
-        colName = displayedCols[i]
-        if not colName in self.crossOvers:
-            if colName not in self.data.columns:
-                print (">> '{}' column not found in data, skipping...".format(colName))
-                break
-            color = colors[i] if len(colors) > i else None
-            ax[0].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange], color=color)
-            colNames.append(colName)
-        else:
-            cutColumn = self.crossOvers[colName]
-            low = self.data[minRange:maxRange][self.data[colName+"Up"]]
-            up = self.data[minRange:maxRange][self.data[colName+"Down"]]
-            plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
-            plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
-    ax[0].legend(colNames)
-    if volume is not None:
-        ax[1].bar(self.data.date[minRange:maxRange], self.data[volume][minRange:maxRange])
-        ax[1].legend([volume])
+    for i in plotGroups:
+        colGroup = plotGroups.get(i)
+        for colName in colGroup:
+            if not colName in self.crossOvers:
+                if colName not in self.data.columns:
+                    print (">> '{}' column not found in data, skipping...".format(colName))
+                    break
+                color = colors[i+colGroup.index(colName)] if len(colors) > i else None
+                if colName == volume:
+                    plots[i].bar(self.data.date[minRange:maxRange], self.data[volume][minRange:maxRange])
+                else:
+                    plots[i].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange], color=color)
+                colNames.append(colName)
+            else:
+                cutColumn = self.crossOvers[colName]
+                low = self.data[minRange:maxRange][self.data[colName+"Up"]]
+                up = self.data[minRange:maxRange][self.data[colName+"Down"]]
+                plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
+                plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
+        plots[i].legend(colGroup)
     plt.show()
     return self
-
