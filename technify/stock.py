@@ -24,6 +24,7 @@ class Stock:
             self.data.date = [d.date() for d in self.data.date]
     else:
         self.data = pd.DataFrame()
+    print(">> Stock - available cols:{}".format(list(self.data.columns)))
 
   @staticmethod
   def fromQuandl (ticker):
@@ -34,6 +35,7 @@ class Stock:
     return Stock(instrumentData, indexIsDate=True)
 
   def append (self, func, *cols, saveas=[], **kwargs):
+    saveas = [saveas] if type(saveas) is not list else saveas
     outputValues = []
     if len(cols) == 1:
         outputValues = func(np.asarray(self.data[cols[0]]), **kwargs)
