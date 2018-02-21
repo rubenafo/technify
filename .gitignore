@@ -1,6 +1,6 @@
 *.pyc
 *.pyo
-technify/libs/__pycache__/*
+technify/__pycache__/*
 build/
 dist/
 *egg-info

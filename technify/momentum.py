@@ -144,14 +144,40 @@ def adosc(high, low, close, volume, slowperiod=3, fastperiod=10):
 def obv(volume):
     return {"obv": ta.OBV(volume)}
 
+
 # Volatility
 
-def atr (high, low, close, timeperiod=14):
-    return {"atr":ta.ATR(high, low, close, timeperiod)}
+def atr(high, low, close, timeperiod=14):
+    return {"atr": ta.ATR(high, low, close, timeperiod)}
 
 
 def natr(high, low, close, timeperiod=14):
     return {"natr": ta.NATR(high, low, close, timeperiod)}
 
-def trange (high, low, close):
+
+def trange(high, low, close):
     return {"trange": ta.TRANGE(high, low, close)}
+
+
+# Cycle indicators
+
+def ht_dcperiod(col):
+    return {"htdc": ta.HT_DCPERIOD(col)}
+
+
+def ht_dcphase(col):
+    return {"htcdphase": ta.HT_DCPHASE(col)}
+
+
+def ht_dcphase(col):
+    values = ta.HT_PHASOR(col)
+    return {"inphase": values[0], "quadrature": values[1]}
+
+
+def ht_sine(col):
+    values = ta.HT_SINE(col)
+    return {"sine": values[0], "leadsine": values[1]}
+
+
+def ht_trendline(col):
+    return {"httrendmode": ta.HT_TRENDMODE(col)}
