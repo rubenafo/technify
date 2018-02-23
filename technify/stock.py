@@ -60,12 +60,13 @@ class Stock:
         self.data[dstColName] = data[srcColName]
         return self
 
-    def addCrossover(self, gen1, gen2, crossName):
+    def cross(self, gen1, gen2, crossName):
         low = (self.data.shift(1)[gen1] > self.data.shift(1)[gen2]) & (self.data[gen1] < self.data[gen2])
         high = (self.data.shift(1)[gen1] < self.data.shift(1)[gen2]) & (self.data[gen1] > self.data[gen2])
         self.data[crossName + "Down"] = low
         self.data[crossName + "Up"] = high
-        self.crossOvers[crossName] = gen2
+        self.crossOvers[crossName] = (gen1, gen2)
+        print(">> storing {}-{} crossver as {}".format(gen1, gen2, crossName))
         return self
 
     # Infer how many subplots we need
@@ -115,11 +116,14 @@ class Stock:
                                       color=color)
                     colNames.append(colName)
                 else:
-                    cutColumn = self.crossOvers[colName]
-                    low = self.data[minRange:maxRange][self.data[colName + "Up"]]
-                    up = self.data[minRange:maxRange][self.data[colName + "Down"]]
-                    plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
-                    plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
+                    cutColumn = self.crossOvers[colName][0]
+                    d = self.data[minRange:maxRange]
+                    low = d.loc[d['crossUp'] == True]
+                    up = d.loc[d['crossDown'] == True]
+                    if len(low):
+                        plt.scatter(low.date.values, low[cutColumn].values, s=165, alpha=0.6, c="green")
+                    if len(up):
+                        plt.scatter(up.date.values, up[cutColumn].values, s=165, alpha=0.6, c="red")
             plots[i].legend(colGroup)
         plt.show()
         return self
