@@ -30,7 +30,6 @@ class Stock:
         if "QUANDL_TOKEN" in os.environ:
             quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
         instrumentData = quandl.get(ticker)
-        print(">> {} - available cols:{}".format(ticker, list(instrumentData.columns)))
         return Stock(instrumentData, indexIsDate=True)
 
     # Append indicator
