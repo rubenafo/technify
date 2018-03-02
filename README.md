@@ -19,10 +19,16 @@ Check the most up-to-date documentation in the [wiki](https://github.com/rubenaf
 from technify import Stock
 from technify import indicators as ind
 
+# The following code:
+# 1) add mean average using Close column, time window = 40   
+# 2) add crossing of Open column over ma40   
+# 3) plot Open, ma40 and the crossing points together, limit to the last 90 values, plot volume using "Volume" column
+
 msft = Stock.fromQuandl("EOD/MSFT") \
-  .append(ind.ma, "Close", timeperiod=40)\
-  .cross("Open", "ma", "cross") \
-  .show(["Open", "ma", "cross"], interval=range(-90), volume="Volume")
+  .append(ind.ma, "Close", timeperiod=40, saveas="ma40")\  
+  .cross("Open", "ma40", "cross") \           
+  .show(["Open", "ma40", "cross"], interval=range(-90), volume="Volume") 
+  
 ```
 Some Screenshots |
 -----
