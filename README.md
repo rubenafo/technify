@@ -15,18 +15,15 @@ Check the most up-to-date documentation in the [wiki](https://github.com/rubenaf
 
 # Examples
 
-The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quandl.com/data/BCHARTS/KRAKENUSD-Bitcoin-Markets-krakenUSD), calculates the Bollinger Bands and EMA(40) and displays the latest 60 data points.
-
-### Loading from Quandl
 ```python
 from technify import Stock
 from technify import indicators as ind
 
-bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
-  .append(ind.bbands, "Close", timeperiod=40, saveas=["low", "med", "high"]) \
-  .append(ind.ema, "Open", timeperiod=40)\
-  .show(["low", "med", "high"], interval=range(-60))
+msft = Stock.fromQuandl("EOD/MSFT") \
+  .append(ind.ma, "Close", timeperiod=40)\
+  .cross("Open", "ma", "cross") \
+  .show(["Open", "ma", "cross"], interval=range(-90), volume="Volume")
 ```
-a | b
+Some Screenshots |
 -----
 <img src="https://github.com/rubenafo/technify/blob/master/imgs/t1.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t2.png" width="200">
