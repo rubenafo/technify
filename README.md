@@ -32,4 +32,4 @@ msft = Stock.fromQuandl("EOD/MSFT") \
 ```
 Some Screenshots |
 -----
-<img src="https://github.com/rubenafo/technify/blob/master/imgs/t1.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t2.png" width="200">
+<img src="https://github.com/rubenafo/technify/blob/master/imgs/t1.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t2.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t3.png" width="200">
