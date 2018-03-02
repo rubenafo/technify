@@ -4,6 +4,8 @@ import os
 import matplotlib.pyplot as plt
 import quandl
 import datetime
+import matplotlib.dates as mdates
+from . import utils
 
 plt.style.use('ggplot')
 
@@ -13,7 +15,7 @@ class Stock:
     def __init__(self, data=None, indexIsDate=False):
         if "QUANDL_TOKEN" in os.environ:
             quandl.ApiConfig.api_key = os.environ["QUANDL_TOKEN"]
-        self.crossOvers = {}
+        self.crossovers = {}
         self.showVolume = False
         if data is not None:
             self.data = pd.DataFrame(data)
@@ -66,8 +68,8 @@ class Stock:
         low = (self.data.shift(1)[gen1] < self.data.shift(1)[gen2]) & (self.data[gen1] > self.data[gen2])
         self.data[crossName + "Down"] = low
         self.data[crossName + "Up"] = high
-        self.crossOvers[crossName] = (gen1, gen2)
-        print(">> storing {}-{} crossver as {}".format(gen1, gen2, crossName))
+        self.crossovers[crossName] = (gen1, gen2)
+        print(">> storing {} crossing {} as [{}, {}]".format(gen1, gen2, crossName + "Down", crossName + "Up"))
         return self
 
     # Infer how many subplots we need
@@ -90,7 +92,6 @@ class Stock:
     def show(self, *displayedCols, interval=None, volume=None, colors=[]):
         plotGroups, fig, plots = self.inferPlots(displayedCols, volume)
         fig.subplots_adjust(hspace=0)
-        #self.ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
         fig.autofmt_xdate()
         colNames = []
         minRange = 0
@@ -105,6 +106,7 @@ class Stock:
         for i in plotGroups:
             colGroup = plotGroups.get(i)
             for colName in colGroup:
+                if not colName in self.crossovers:
                     if colName not in self.data.columns:
                         print(">> '{}' column not found in data, skipping...".format(colName))
                         break
@@ -115,6 +117,39 @@ class Stock:
                         plots[i].plot(self.data.date[minRange:maxRange], self.data[colName][minRange:maxRange],
                                       color=color)
                     colNames.append(colName)
+                else:
+                    low = self.data[minRange:maxRange]
+                    low = low[low[colName + "Up"]]
+                    up = self.data[minRange:maxRange]
+                    up = up[up[colName + "Down"]]
+                    upx,upy = self.updateDate(up, self.data, colName)
+                    downx,downy = self.updateDate(low, self.data, colName)
+                    plt.scatter(downx, downy, s=165, alpha=0.6, c="red")
+                    plt.scatter(upx, upy, s=165, alpha=0.6, c="green")
             plots[i].legend(colGroup)
         plt.show()
         return self
+
+    def updateDate (self, df, dates, colname):
+        crossingcol = self.crossovers[colname][0]
+        crossedcol = self.crossovers[colname][1]
+        upindexes = list(df.index)
+        upindexes.extend([u-1 for u in upindexes])
+        upindexes.sort()
+        alldates = dates.loc[upindexes]
+        pairs = list(utils.grouper(upindexes, 2))
+        resultx = []
+        resulty = []
+        for pair in pairs:
+            prev = alldates.loc[pair[0]]
+            post = alldates.loc[pair[1]]
+            date0 = mdates.date2num(prev.date)
+            date1 = mdates.date2num(post.date)
+            o0 = prev[crossingcol]
+            o1 = post[crossingcol]
+            c0 = prev[crossedcol]
+            c1 = post[crossedcol]
+            intersect = utils.intersection(utils.line([date0,o0],[date1,o1]), utils.line([date0,c0],[date1,c1]))
+            resultx.append(intersect[0])
+            resulty.append(intersect[1])
+        return resultx,resulty

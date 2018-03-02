@@ -20,12 +20,12 @@ The following snippet loads the Bitcoin-USD data from [Quandl](https://www.quand
 ### Loading from Quandl
 ```python
 from technify import Stock
-from technify import Overlap as ov
+from technify import indicators as ind
 
 bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
-  .append(ov.bbands, "Close", timeperiod=40, saveas=["bblow", "bbmedium", "bbhigh"]) \
-  .append(ov.ema, "Open", timeperiod=40)\
-  .show("bblow", "bbmedium", "bbhigh", interval=range(-60))
+  .append(ind.bbands, "Close", timeperiod=40, saveas=["low", "med", "high"]) \
+  .append(ind.ema, "Open", timeperiod=40)\
+  .show(["low", "med", "high"], interval=range(-60))
 ```
 
 <img src="https://github.com/rubenafo/technify/blob/master/imgs/technify_1.png" width="806">
