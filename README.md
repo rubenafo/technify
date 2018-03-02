@@ -27,5 +27,6 @@ bitusd = Stock.fromQuandl("BCHARTS/KRAKENUSD") \
   .append(ind.ema, "Open", timeperiod=40)\
   .show(["low", "med", "high"], interval=range(-60))
 ```
-
-<img src="https://github.com/rubenafo/technify/blob/master/imgs/technify_1.png" width="806">
+a | b
+-----
+<img src="https://github.com/rubenafo/technify/blob/master/imgs/t1.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t2.png" width="200">
