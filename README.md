@@ -6,6 +6,7 @@ _Technify_ provides a simple yet powerful framework to generate common technical
 The data can be provided as _ohlcv_ data or directly from [Quandl](https://www.quandl.com/) by means of the built-in integration.
 
 # Features
+* _OHLCV_ values handling
 * Integration with [Quandl](https://www.quandl.com/) data feed and API auth
 * TA-LIB indicators
 * Plotting of volume, crossing points and indicators
