@@ -18,7 +18,7 @@ class Stock:
         self.crossovers = {}
         self.showVolume = False
         if data is not None:
-            self.data = pd.DataFrame(data)
+            self.data = pd.DataFrame(data, dtype=float)
             if indexIsDate:
                 self.data["date"] = data.index
                 self.data.date = [d.date() for d in self.data.date]
