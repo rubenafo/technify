@@ -30,6 +30,7 @@ msft = Stock.fromQuandl("EOD/MSFT") \
   .show(["Open", "ma40", "cross"], interval=range(-90), volume="Volume") 
   
 ```
-Some Screenshots |
+
+Screenshots
 -----
 <img src="https://github.com/rubenafo/technify/blob/master/imgs/t1.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t2.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t3.png" width="200"> | <img src="https://github.com/rubenafo/technify/blob/master/imgs/t4.png" width="200">
