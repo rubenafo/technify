@@ -37,6 +37,7 @@ class Stock:
     # Append indicator
     #
     def append(self, func, cols, saveas=[], **kwargs):
+        cols = [cols] if type(cols) is not list else cols
         saveas = [saveas] if type(saveas) is not list else saveas
         outputValues = []
         arraycols = list(map(lambda c: np.asarray(self.data[c]), cols))
