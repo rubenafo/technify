@@ -142,8 +142,8 @@ def adosc(high, low, close, volume, slowperiod=3, fastperiod=10):
     return {"adosc": ta.ADOSC(high, low, close, volume, slowperiod, fastperiod)}
 
 
-def obv(volume):
-    return {"obv": ta.OBV(volume)}
+def obv(close, volume):
+    return {"obv": ta.OBV(close, volume)}
 
 
 ## Volatility indicators
@@ -170,7 +170,7 @@ def ht_dcphase(col):
     return {"htcdphase": ta.HT_DCPHASE(col)}
 
 
-def ht_dcphase(col):
+def ht_phasor(col):
     values = ta.HT_PHASOR(col)
     return {"inphase": values[0], "quadrature": values[1]}
 
@@ -180,10 +180,11 @@ def ht_sine(col):
     return {"sine": values[0], "leadsine": values[1]}
 
 
-def ht_trendline(col):
+def ht_trendmode(col):
     return {"httrendmode": ta.HT_TRENDMODE(col)}
 
-# output: upperband, middleband, lowerband
+# Overlap indicators
+
 def bbands(col, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0):
     values = ta.BBANDS(col, timeperiod, nbdevup, nbdevdn, matype)
     return {"bbands_ub":values[0], "bbands_mb":values[1], "bbands_lb":values[2]}

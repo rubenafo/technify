@@ -124,8 +124,8 @@ class Stock:
                     up = up[up[colName + "Down"]]
                     upx,upy = self.updateDate(up, self.data, colName)
                     downx,downy = self.updateDate(low, self.data, colName)
-                    plt.scatter(downx, downy, s=165, alpha=0.6, c="red")
-                    plt.scatter(upx, upy, s=165, alpha=0.6, c="green")
+                    plots[i].scatter(downx, downy, s=165, alpha=0.6, c="red")
+                    plots[i].scatter(upx, upy, s=165, alpha=0.6, c="green")
             plots[i].legend(colGroup)
         plt.show()
         return self
